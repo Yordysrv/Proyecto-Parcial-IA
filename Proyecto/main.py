@@ -42,8 +42,7 @@ pygame.mixer.music.play(-1)
 grid = [[0 for _ in range(WORLD_WIDTH // TILE_SIZE)] for _ in range(WORLD_HEIGHT // TILE_SIZE)]
 for _ in range(300):
     grid[random.randint(0, len(grid) - 1)][random.randint(0, len(grid[0]) - 1)] = 1
-
-
+# colisiones
 def collides_with_walls(rect):
     left = rect.left // TILE_SIZE
     right = rect.right // TILE_SIZE
@@ -56,7 +55,7 @@ def collides_with_walls(rect):
                 if grid[y][x] == 1:
                     return True
     return False 
-   
+# clase Player (jugador)
 class player(pygame.sprite.Sprite):
     def __init__(self, x, y):
        super().__init__()
@@ -74,12 +73,12 @@ class player(pygame.sprite.Sprite):
                        {"x": 48.4, "y": 148.5, "w": 48.4, "h": 49.5},
                        {"x": 96.8, "y": 148.5, "w": 48.4, "h": 49.5}]
         }
-        self.direction = "abajo"
-        self.frame_index = 0
-        self.animation_timer = 0
-        self.speed = 4
-        self.image = self.get_frame()
-        self.rect = self.image.get_rect(topleft=(x, y))
+       self.direction = "abajo"
+       self.frame_index = 0
+       self.animation_timer = 0
+       self.speed = 4
+       self.image = self.get_frame()
+       self.rect = self.image.get_rect(topleft=(x, y))
 # frame de animacion
     def get_frame(self):
         frame_info = self.sprite_data[self.direction][self.frame_index]
