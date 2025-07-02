@@ -3,7 +3,7 @@ import sys
 import heapq
 import random
 import os
-
+from scripts.player01 import Player
 pygame.init()
 pygame.mixer.init()
 
@@ -412,3 +412,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
