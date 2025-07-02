@@ -25,11 +25,11 @@ pygame.display.set_caption("Alien Breed - Scroll - A* - Nivel completo")
 WORLD_WIDTH = 2000
 WORLD_HEIGHT = 2000
 
-# Cololes utilizado
+# Colores
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 
-# Recursos Grfico y sonido 
+# Recursos gráficos y sonido
 fondo = pygame.image.load(os.path.join('images', 'fondo.png')).convert()
 fondo = pygame.transform.scale(fondo, (WORLD_WIDTH, WORLD_HEIGHT))
 player_sheet = pygame.image.load(os.path.join('images', 'player_sheet.png')).convert_alpha()
@@ -38,24 +38,23 @@ disparo_sound = pygame.mixer.Sound(os.path.join('sound', 'shoot.wav'))
 pygame.mixer.music.load(os.path.join('sound', 'musica de fondo.mp3'))
 pygame.mixer.music.play(-1)
 
-# Mapa 
+# Mapa
 grid = [[0 for _ in range(WORLD_WIDTH // TILE_SIZE)] for _ in range(WORLD_HEIGHT // TILE_SIZE)]
 for _ in range(300):
     grid[random.randint(0, len(grid) - 1)][random.randint(0, len(grid[0]) - 1)] = 1
-#colisiones 
+
 def collides_with_walls(rect):
     left = rect.left // TILE_SIZE
     right = rect.right // TILE_SIZE
     top = rect.top // TILE_SIZE
     bottom = rect.bottom // TILE_SIZE
-
     for y in range(top, bottom + 1):
         for x in range(left, right + 1):
             if 0 <= x < len(grid[0]) and 0 <= y < len(grid):
                 if grid[y][x] == 1:
                     return True
     return False
-# clase Player (Jugador)
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -79,18 +78,17 @@ class Player(pygame.sprite.Sprite):
         self.speed = 4
         self.image = self.get_frame()
         self.rect = self.image.get_rect(topleft=(x, y))
-    # Metodo clave:
-    def get_frame(self):# cargar el grame de la animacion 
+
+    def get_frame(self):
         frame_info = self.sprite_data[self.direction][self.frame_index]
         frame = pygame.Surface((frame_info["w"], frame_info["h"]), pygame.SRCALPHA)
         frame.blit(player_sheet, (0, 0), (frame_info["x"], frame_info["y"], frame_info["w"], frame_info["h"]))
         return pygame.transform.scale(frame, (32, 32))
-    # mueve el jugador  maneja colisiones Joysstick, teclado y animacion
+
     def update(self, keys, joystick):
         moved = False
         dx, dy = 0, 0
 
-        # Movimiento teclado
         if keys[pygame.K_w]:
             dy -= self.speed
             self.direction = "arriba"
@@ -108,7 +106,6 @@ class Player(pygame.sprite.Sprite):
             self.direction = "derecha"
             moved = True
 
-        # Movimiento joystick (stick izquierdo)
         if joystick:
             axis_x = joystick.get_axis(0)
             axis_y = joystick.get_axis(1)
@@ -122,17 +119,14 @@ class Player(pygame.sprite.Sprite):
                     self.direction = "abajo" if axis_y > 0 else "arriba"
                 moved = True
 
-        # Mover en x y comprobar colisión
         self.rect.x += dx
         if collides_with_walls(self.rect):
             self.rect.x -= dx
 
-        # Mover en y y comprobar colisión
         self.rect.y += dy
         if collides_with_walls(self.rect):
             self.rect.y -= dy
 
-        # Limitar dentro del mundo
         self.rect.x = max(0, min(self.rect.x, WORLD_WIDTH - self.rect.width))
         self.rect.y = max(0, min(self.rect.y, WORLD_HEIGHT - self.rect.height))
 
@@ -144,7 +138,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.frame_index = 1
         self.image = self.get_frame()
-#clase Enemy (enemigo IA A*)
+
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -168,13 +162,13 @@ class Enemy(pygame.sprite.Sprite):
         self.speed = 2
         self.image = self.get_frame()
         self.rect = self.image.get_rect(topleft=(x, y))
-    # frame  de animaciom
+
     def get_frame(self):
         frame_info = self.sprite_data[self.direction][self.frame_index]
         frame = pygame.Surface((frame_info["w"], frame_info["h"]), pygame.SRCALPHA)
         frame.blit(enemy_img, (0, 0), (frame_info["x"], frame_info["y"], frame_info["w"], frame_info["h"]))
         return pygame.transform.scale(frame, (32, 32))
-    # movimiento hacia el jugador usando A* y detecion de colision 
+
     def update(self, target_pos):
         ex, ey = self.rect.center
         tx, ty = target_pos
@@ -212,8 +206,7 @@ class Enemy(pygame.sprite.Sprite):
 
         if abs(self.rect.centerx - tx) < 20 and abs(self.rect.centery - ty) < 20:
             game_over()
-# Algorimo A* calcula mino mas corto entre el enemigo y jugador tambien 
-# Usa heurística de distancia Manhattan y evita paredes
+
 def astar(start, goal):
     def heuristic(a, b): return abs(a[0] - b[0]) + abs(a[1] - b[1])
     open_set, came_from, g_score = [(0, start)], {}, {start: 0}
@@ -235,7 +228,7 @@ def astar(start, goal):
                     g_score[neighbor] = tentative_g
                     heapq.heappush(open_set, (tentative_g + heuristic(neighbor, goal), neighbor))
     return []
-#disparo de bala 
+
 def shoot():
     dx, dy = 0, 0
     if player.direction == "arriba":
@@ -246,17 +239,16 @@ def shoot():
         dx, dy = -8, 0
     elif player.direction == "derecha":
         dx, dy = 8, 0
-
     bullets.append([player.rect.centerx, player.rect.centery, dx, dy])
     disparo_sound.play()
-#dibuja el mapa 
+
 def draw_map(camera_x, camera_y):
     for y, row in enumerate(grid):
         for x, cell in enumerate(row):
             if cell == 1:
                 pygame.draw.rect(screen, (50, 50, 50),
                                  (x * TILE_SIZE - camera_x, y * TILE_SIZE - camera_y, TILE_SIZE, TILE_SIZE))
-#cmuestra un pequeño mapa 
+
 def draw_minimap(camera_x, camera_y):
     minimap_width = 200
     minimap_height = 200
@@ -282,7 +274,7 @@ def draw_minimap(camera_x, camera_y):
     pygame.draw.circle(minimap_surface, (0, 255, 0), (px, py), 4)
     pygame.draw.rect(minimap_surface, WHITE, (0, 0, minimap_width, minimap_height), 2)
     screen.blit(minimap_surface, (WIDTH - minimap_width - 10, 10))
-# menu de inicio 
+
 def start_menu():
     font = pygame.font.SysFont(None, 48)
     text = font.render("Presiona ENTER o START para Iniciar", True, WHITE)
@@ -294,13 +286,11 @@ def start_menu():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    return
-            if event.type == pygame.JOYBUTTONDOWN:
-                if joystick and event.button == 7:  # Botón START (Xbox/PS4)
-                    return
-# Pantalla de nivel completado (se muestra cuando el jugador elimina todo los enemigo )
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                return
+            if event.type == pygame.JOYBUTTONDOWN and joystick and event.button == 7:
+                return
+
 def level_complete():
     font = pygame.font.SysFont(None, 72)
     text = font.render("¡Has completado este nivel!", True, (0, 255, 0))
@@ -321,18 +311,17 @@ def level_complete():
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
-            if event.type == pygame.JOYBUTTONDOWN:
-                if joystick and event.button == 0:  # Botón A/X
-                    main()
-                    return
-# pantalla de Game Over
+            if event.type == pygame.JOYBUTTONDOWN and joystick and event.button == 0:
+                main()
+                return
+
 def game_over():
     font = pygame.font.SysFont(None, 72)
     text = font.render("GAME OVER", True, RED)
     text2 = pygame.font.SysFont(None, 36).render("Presiona R o A para reiniciar, ESC para salir", True, WHITE)
     while True:
         screen.fill((0, 0, 0))
-        screen.blit(text, (250, 250))
+        screen.blit(text, (250, 250)) 
         screen.blit(text2, (180, 330))
         pygame.display.flip()
         for event in pygame.event.get():
@@ -346,10 +335,9 @@ def game_over():
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
-            if event.type == pygame.JOYBUTTONDOWN:
-                if joystick and event.button == 0:  # Botón A/X
-                    main()
-                    return
+            if event.type == pygame.JOYBUTTONDOWN and joystick and event.button == 0:
+                main()
+                return
 
 player = Player(WORLD_WIDTH // 2, WORLD_HEIGHT // 2)
 enemies = pygame.sprite.Group()
@@ -358,7 +346,7 @@ for _ in range(10):
     ey = random.randint(0, WORLD_HEIGHT - 32)
     enemies.add(Enemy(ex, ey))
 bullets = []
-# logica principal del juego 
+
 def main():
     global player, enemies, bullets
     player = Player(WORLD_WIDTH // 2, WORLD_HEIGHT // 2)
@@ -378,75 +366,49 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            # Disparo teclado o mouse
             if event.type == pygame.MOUSEBUTTONDOWN:
                 shoot()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    shoot()
-            if event.type == pygame.JOYBUTTONDOWN:
-                if joystick and event.button == 5:  # RT por ejemplo
-                    shoot()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                shoot()
+            if event.type == pygame.JOYBUTTONDOWN and joystick and event.button == 0:
+                shoot()
 
         player.update(keys, joystick)
-
         for enemy in enemies:
             enemy.update(player.rect.center)
 
-        # Actualizar balas
         for bullet in bullets[:]:
             bullet[0] += bullet[2]
             bullet[1] += bullet[3]
-            # Colisión con muros
             bullet_rect = pygame.Rect(bullet[0], bullet[1], 5, 5)
             if collides_with_walls(bullet_rect):
                 bullets.remove(bullet)
                 continue
-            # Colisión con enemigos
             for enemy in enemies:
-                if enemy.rect.collidepoint(bullet[0], bullet[1]):
+                if bullet_rect.colliderect(enemy.rect):
                     enemies.remove(enemy)
                     if bullet in bullets:
                         bullets.remove(bullet)
                     break
 
-        # Scroll cámara centrada en jugador
-        camera_x = player.rect.centerx - WIDTH // 2
-        camera_y = player.rect.centery - HEIGHT // 2
-
-        # Limitar cámara dentro del mundo
-        camera_x = max(0, min(camera_x, WORLD_WIDTH - WIDTH))
-        camera_y = max(0, min(camera_y, WORLD_HEIGHT - HEIGHT))
-
-        # Dibujar fondo
-        screen.blit(fondo, (-camera_x, -camera_y))
-
-        # Dibujar muros
-        draw_map(camera_x, camera_y)
-
-        # Dibujar jugador
-        screen.blit(player.image, (player.rect.x - camera_x, player.rect.y - camera_y))
-
-        # Dibujar enemigos
-        for enemy in enemies:
-            screen.blit(enemy.image, (enemy.rect.x - camera_x, enemy.rect.y - camera_y))
-
-        # Dibujar balas
-        for bullet in bullets:
-            pygame.draw.rect(screen, (255, 255, 0), (bullet[0] - camera_x, bullet[1] - camera_y, 5, 5))
-
-        # Dibujar minimapa
-        draw_minimap(camera_x, camera_y)
-
-        pygame.display.flip()
-
         if len(enemies) == 0:
             level_complete()
-    
+
+        camera_x = max(0, min(player.rect.centerx - WIDTH // 2, WORLD_WIDTH - WIDTH))
+        camera_y = max(0, min(player.rect.centery - HEIGHT // 2, WORLD_HEIGHT - HEIGHT))
+
+        screen.blit(fondo, (-camera_x, -camera_y))
+        draw_map(camera_x, camera_y)
+        for bullet in bullets:
+            pygame.draw.rect(screen, (255, 255, 0), (bullet[0] - camera_x, bullet[1] - camera_y, 5, 5))
+        screen.blit(player.image, (player.rect.x - camera_x, player.rect.y - camera_y))
+        for enemy in enemies:
+            screen.blit(enemy.image, (enemy.rect.x - camera_x, enemy.rect.y - camera_y))
+        draw_minimap(camera_x, camera_y)
+        pygame.display.flip()
+
     pygame.quit()
     sys.exit()
-# control del juego 4
+
 if __name__ == "__main__":
     main()
-
-
