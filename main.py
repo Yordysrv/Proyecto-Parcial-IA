@@ -140,7 +140,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.frame_index = 1
         self.image = self.get_frame()
-    # clase Enemigo
+    # clase Enemy
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -208,7 +208,7 @@ class Enemy(pygame.sprite.Sprite):
 
         if abs(self.rect.centerx - tx) < 20 and abs(self.rect.centery - ty) < 20:
             game_over()
-
+#Algoritmo A* para encontrar el camino más corto evitando obstáculos:
 def astar(start, goal):
     def heuristic(a, b): return abs(a[0] - b[0]) + abs(a[1] - b[1])
     open_set, came_from, g_score = [(0, start)], {}, {start: 0}
@@ -230,7 +230,7 @@ def astar(start, goal):
                     g_score[neighbor] = tentative_g
                     heapq.heappush(open_set, (tentative_g + heuristic(neighbor, goal), neighbor))
     return []
-
+#disparo
 def shoot():
     dx, dy = 0, 0
     if player.direction == "arriba":
@@ -250,7 +250,7 @@ def draw_map(camera_x, camera_y):
             if cell == 1:
                 pygame.draw.rect(screen, (50, 50, 50),
                                  (x * TILE_SIZE - camera_x, y * TILE_SIZE - camera_y, TILE_SIZE, TILE_SIZE))
-
+    #Mimi mapa que se muestra en el ladoderecho de la pantalla 
 def draw_minimap(camera_x, camera_y):
     minimap_width = 200
     minimap_height = 200
@@ -276,7 +276,7 @@ def draw_minimap(camera_x, camera_y):
     pygame.draw.circle(minimap_surface, (0, 255, 0), (px, py), 4)
     pygame.draw.rect(minimap_surface, WHITE, (0, 0, minimap_width, minimap_height), 2)
     screen.blit(minimap_surface, (WIDTH - minimap_width - 10, 10))
-
+    # menu de unicio, leve completado y Game over 
 def start_menu():
     font = pygame.font.SysFont(None, 48)
     text = font.render("Presiona ENTER o START para Iniciar", True, WHITE)
