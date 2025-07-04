@@ -292,7 +292,7 @@ def start_menu():
                 return
             if event.type == pygame.JOYBUTTONDOWN and joystick and event.button == 7:
                 return
-
+# jugador a pasado a siguiente nivel presentacion en pantalla 
 def level_complete():
     font = pygame.font.SysFont(None, 72)
     text = font.render("¡Has completado este nivel!", True, (0, 255, 0))
