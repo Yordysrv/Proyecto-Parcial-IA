@@ -340,7 +340,7 @@ def game_over():
             if event.type == pygame.JOYBUTTONDOWN and joystick and event.button == 0:
                 main()
                 return
-
+# inicializacion del jugador y enemigos 
 player = Player(WORLD_WIDTH // 2, WORLD_HEIGHT // 2)
 enemies = pygame.sprite.Group()
 for _ in range(10):
