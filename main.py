@@ -316,7 +316,7 @@ def level_complete():
             if event.type == pygame.JOYBUTTONDOWN and joystick and event.button == 0:
                 main()
                 return
-
+# game over  al jugador
 def game_over():
     font = pygame.font.SysFont(None, 72)
     text = font.render("GAME OVER", True, RED)
