@@ -54,7 +54,7 @@ def collides_with_walls(rect):
                 if grid[y][x] == 1:
                     return True
     return False
-
+#clase (jugado)
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
