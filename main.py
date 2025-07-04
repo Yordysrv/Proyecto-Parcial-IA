@@ -348,8 +348,9 @@ for _ in range(10):
     ey = random.randint(0, WORLD_HEIGHT - 32)
     enemies.add(Enemy(ex, ey))
 bullets = []
-
+# funcion principal del juego 
 def main():
+    #variable y configuracion 
     global player, enemies, bullets
     player = Player(WORLD_WIDTH // 2, WORLD_HEIGHT // 2)
     enemies = pygame.sprite.Group()
@@ -362,10 +363,11 @@ def main():
     start_menu()
     camera_x, camera_y = 0, 0
     running = True
+    # Loop principal del juego 
     while running:
         clock.tick(60)
         keys = pygame.key.get_pressed()
-        for event in pygame.event.get():
+        for event in pygame.event.get(): #entrada del usuario 
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -374,11 +376,11 @@ def main():
                 shoot()
             if event.type == pygame.JOYBUTTONDOWN and joystick and event.button == 0:
                 shoot()
-
+        # atualizaciones del jugador y enemigos 
         player.update(keys, joystick)
         for enemy in enemies:
             enemy.update(player.rect.center)
-
+        # logistica de disparo 
         for bullet in bullets[:]:
             bullet[0] += bullet[2]
             bullet[1] += bullet[3]
@@ -392,13 +394,13 @@ def main():
                     if bullet in bullets:
                         bullets.remove(bullet)
                     break
-
+        # nivel completado 
         if len(enemies) == 0:
             level_complete()
-
+        # camara sigue al jugador dentro de los limites del mundo 
         camera_x = max(0, min(player.rect.centerx - WIDTH // 2, WORLD_WIDTH - WIDTH))
         camera_y = max(0, min(player.rect.centery - HEIGHT // 2, WORLD_HEIGHT - HEIGHT))
-
+        # dibujo en pantalla 
         screen.blit(fondo, (-camera_x, -camera_y))
         draw_map(camera_x, camera_y)
         for bullet in bullets:
@@ -408,10 +410,10 @@ def main():
             screen.blit(enemy.image, (enemy.rect.x - camera_x, enemy.rect.y - camera_y))
         draw_minimap(camera_x, camera_y)
         pygame.display.flip()
-
+    # final del juego 
     pygame.quit()
     sys.exit()
-
+#ejecucion del juego 
 if __name__ == "__main__":
     main()
 
