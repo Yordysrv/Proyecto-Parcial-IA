@@ -1,9 +1,11 @@
+#LIbreia 
 import pygame
 import sys
 import heapq
 import random
 import os
 from scripts.player01 import Player
+#inializacion 
 pygame.init()
 pygame.mixer.init()
 
@@ -15,7 +17,7 @@ if pygame.joystick.get_count() > 0:
     joystick.init()
     print(f"Joystick conectado: {joystick.get_name()}")
 
-# Pantalla
+#  Confihuracion de Pantalla
 WIDTH, HEIGHT = 1300, 700
 TILE_SIZE = 40
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -42,7 +44,7 @@ pygame.mixer.music.play(-1)
 grid = [[0 for _ in range(WORLD_WIDTH // TILE_SIZE)] for _ in range(WORLD_HEIGHT // TILE_SIZE)]
 for _ in range(300):
     grid[random.randint(0, len(grid) - 1)][random.randint(0, len(grid[0]) - 1)] = 1
-
+# colicion contra paredes
 def collides_with_walls(rect):
     left = rect.left // TILE_SIZE
     right = rect.right // TILE_SIZE
