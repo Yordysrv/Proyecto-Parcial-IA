@@ -80,13 +80,13 @@ class Player(pygame.sprite.Sprite):
         self.speed = 4
         self.image = self.get_frame()
         self.rect = self.image.get_rect(topleft=(x, y))
-
+    #Frame  de animacio atual
     def get_frame(self):
         frame_info = self.sprite_data[self.direction][self.frame_index]
         frame = pygame.Surface((frame_info["w"], frame_info["h"]), pygame.SRCALPHA)
         frame.blit(player_sheet, (0, 0), (frame_info["x"], frame_info["y"], frame_info["w"], frame_info["h"]))
         return pygame.transform.scale(frame, (32, 32))
-
+    #atualizar la posicion del jugador 
     def update(self, keys, joystick):
         moved = False
         dx, dy = 0, 0
@@ -140,7 +140,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.frame_index = 1
         self.image = self.get_frame()
-
+    # clase Enemigo
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
